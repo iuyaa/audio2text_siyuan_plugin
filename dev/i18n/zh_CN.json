@@ -6,10 +6,12 @@
     "hintDesc": "<a href='https://github.com/KPRepos/audio2text_siyuan_plugin'>🔗 audio2text_siyuan_plugin</a><br>💻 @kprepos<br>",
     "transcribeAudio": "转录音频",
     "openaiApiKey": "OpenAI API 密钥",
-    "openaiApiKeyDesc": "输入您的 OpenAI API 密钥用于音频转录",
+    "openaiApiKeyDesc": "输入兼容 OpenAI 格式的 API 密钥用于音频转录",
+    "openaiBaseUrl": "OpenAI Base URL",
+    "openaiBaseUrlDesc": "可选：设置兼容 OpenAI 的自定义 Base URL（默认 https://api.openai.com）",
     "transcribing": "正在转录音频...",
     "transcriptionSuccess": "转录完成",
     "transcriptionError": "转录失败",
-    "apiKeyRequired": "请在插件设置中设置您的 OpenAI API 密钥",
+    "apiKeyRequired": "请在插件设置中设置您的 API 密钥",
     "audioFileNotFound": "未找到音频文件"
 }

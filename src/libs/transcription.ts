@@ -7,6 +7,7 @@ import { getFileBlob } from "../api";
 export interface TranscriptionOptions {
     apiKey: string;
     language?: string;
+    baseUrl?: string;
 }
 
 const OPENAI_ALLOWED_EXTS = new Set([
@@ -39,6 +40,17 @@ function ensureFilename(path: string, blob: Blob): string {
     if (hasExt) return base;
     const ext = guessExtFromMime(blob.type) || "wav";
     return `${base}.${ext}`;
+}
+
+function normalizeBaseUrl(baseUrl?: string): string {
+    const fallback = "https://api.openai.com/v1";
+    const trimmed = (baseUrl || "").trim();
+    if (!trimmed) return fallback;
+    const withoutSlash = trimmed.replace(/\/+$/, "");
+    if (withoutSlash.endsWith("/v1")) {
+        return withoutSlash;
+    }
+    return `${withoutSlash}/v1`;
 }
 
 /**
@@ -84,8 +96,9 @@ export async function transcribeAudio(
         formData.append("language", options.language);
     }
 
+    const baseUrl = normalizeBaseUrl(options.baseUrl);
     // Call OpenAI Whisper API
-    const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+    const response = await fetch(`${baseUrl}/audio/transcriptions`, {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${options.apiKey}`,
@@ -164,4 +177,3 @@ export function getAudioPathFromElement(element: HTMLElement): string | null {
 
     return null;
 }
-
