@@ -6,10 +6,12 @@
     "hintDesc": "<a href='https://github.com/KPRepos/audio2text_siyuan_plugin'>audio2text_siyuan_plugin</a><br>@kprepos<br>",
     "transcribeAudio": "Transcribe Audio",
     "openaiApiKey": "OpenAI API Key",
-    "openaiApiKeyDesc": "Enter your OpenAI API key for audio transcription",
+    "openaiApiKeyDesc": "Enter your OpenAI-compatible API key for audio transcription",
+    "openaiBaseUrl": "OpenAI Base URL",
+    "openaiBaseUrlDesc": "Optional. Set a custom OpenAI-compatible base URL (defaults to https://api.openai.com)",
     "transcribing": "Transcribing audio...",
     "transcriptionSuccess": "Transcription completed",
     "transcriptionError": "Transcription failed",
-    "apiKeyRequired": "Please set your OpenAI API key in plugin settings",
+    "apiKeyRequired": "Please set your API key in plugin settings",
     "audioFileNotFound": "Audio file not found"
 }
