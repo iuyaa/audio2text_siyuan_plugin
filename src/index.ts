@@ -18,8 +18,6 @@ export default class PluginSample extends Plugin {
     async onload() {
         this.data[STORAGE_NAME] = { openaiApiKey: "" };
 
-        showMessage(`[${this.name}] Loaded`);
-        
         // Register audio menu event listener
         this.eventBus.on("open-menu-av", this.audioMenuEventBindThis);
         // Match siyuan-plugin-tts behavior: add items to the block icon (left gutter) menu
@@ -86,8 +84,8 @@ export default class PluginSample extends Plugin {
     uninstall() {
         // 卸载插件时删除插件数据
         // Delete plugin data when uninstalling the plugin
-        this.removeData(STORAGE_NAME).catch(e => {
-            showMessage(`uninstall [${this.name}] remove data [${STORAGE_NAME}] fail: ${e.msg}`);
+        this.removeData(STORAGE_NAME + ".json").catch(e => {
+            console.error(`uninstall [${this.name}] remove data [${STORAGE_NAME}.json] fail:`, e);
         });
     }
 
@@ -134,7 +132,7 @@ export default class PluginSample extends Plugin {
         const apiKey = this.data[STORAGE_NAME]?.openaiApiKey || this.settingUtils.get("OpenAIAPIKey");
         
         if (!apiKey) {
-            showMessage(this.i18n.apiKeyRequired, "error");
+            showMessage(this.i18n.apiKeyRequired, 2500, "error");
             this.openSetting();
             return;
         }
@@ -145,7 +143,7 @@ export default class PluginSample extends Plugin {
         });
 
         if (!audioElement) {
-            showMessage(this.i18n.audioFileNotFound, "error");
+            showMessage(this.i18n.audioFileNotFound, 2500, "error");
             return;
         }
 
@@ -170,15 +168,12 @@ export default class PluginSample extends Plugin {
         }
 
         if (!audioPath) {
-            showMessage(this.i18n.audioFileNotFound, "error");
+            showMessage(this.i18n.audioFileNotFound, 2500, "error");
             return;
         }
 
-        // Show transcribing message
-        showMessage(this.i18n.transcribing);
-
         try {
-            // Transcribe the audio
+            // Transcribe the audio (no message shown to avoid interference with error messages)
             const transcription = await transcribeAudio(audioPath, {
                 apiKey: apiKey
             });
@@ -190,10 +185,10 @@ export default class PluginSample extends Plugin {
                     // Get the block to find its parent
                     const block = await getBlockByID(blockId);
                     const parentID = block.parent_id || block.root_id;
-                    
+
                     // Insert the transcription as a new block after the audio block
                     await insertBlock("markdown", transcription, undefined, blockId, parentID);
-                    showMessage(this.i18n.transcriptionSuccess);
+                    showMessage(this.i18n.transcriptionSuccess, 1000);
                 } catch (error: any) {
                     // Fallback: show the transcription in a message
                     showMessage(transcription);
@@ -203,7 +198,8 @@ export default class PluginSample extends Plugin {
                 showMessage(transcription);
             }
         } catch (error: any) {
-            showMessage(`${this.i18n.transcriptionError}: ${error.message}`, "error");
+            // Show error with extended timeout to ensure it stays visible for at least 2.5 seconds
+            showMessage(`${this.i18n.transcriptionError}: ${error.message}`, 4000, "error");
         }
     }
 }
