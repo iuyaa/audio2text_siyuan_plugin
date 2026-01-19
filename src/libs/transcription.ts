@@ -8,6 +8,7 @@ export interface TranscriptionOptions {
     apiKey: string;
     language?: string;
     baseUrl?: string;
+    model?: string;
 }
 
 const OPENAI_ALLOWED_EXTS = new Set([
@@ -91,9 +92,11 @@ export async function transcribeAudio(
         ? new File([audioBlob], filename, { type: audioBlob.type || undefined })
         : audioBlob;
     formData.append("file", fileLike, filename);
-    formData.append("model", "whisper-1");
-    if (options.language) {
-        formData.append("language", options.language);
+    const model = (options.model || "").trim() || "whisper-1";
+    formData.append("model", model);
+    const language = (options.language || "").trim();
+    if (language) {
+        formData.append("language", language);
     }
 
     const baseUrl = normalizeBaseUrl(options.baseUrl);

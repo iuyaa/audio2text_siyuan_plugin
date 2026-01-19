@@ -16,7 +16,12 @@ export default class PluginSample extends Plugin {
     private settingUtils: SettingUtils;
 
     async onload() {
-        this.data[STORAGE_NAME] = { openaiApiKey: "", openaiBaseUrl: "" };
+        this.data[STORAGE_NAME] = {
+            openaiApiKey: "",
+            openaiBaseUrl: "",
+            openaiModel: "",
+            openaiLanguage: ""
+        };
 
         // Register audio menu event listener
         this.eventBus.on("open-menu-av", this.audioMenuEventBindThis);
@@ -57,6 +62,32 @@ export default class PluginSample extends Plugin {
             }
         });
         this.settingUtils.addItem({
+            key: "OpenAIModel",
+            value: "",
+            type: "textinput",
+            title: this.i18n.openaiModel,
+            description: this.i18n.openaiModelDesc,
+            action: {
+                callback: () => {
+                    let value = this.settingUtils.takeAndSave("OpenAIModel");
+                    this.data[STORAGE_NAME].openaiModel = value;
+                }
+            }
+        });
+        this.settingUtils.addItem({
+            key: "OpenAILanguage",
+            value: "",
+            type: "textinput",
+            title: this.i18n.openaiLanguage,
+            description: this.i18n.openaiLanguageDesc,
+            action: {
+                callback: () => {
+                    let value = this.settingUtils.takeAndSave("OpenAILanguage");
+                    this.data[STORAGE_NAME].openaiLanguage = value;
+                }
+            }
+        });
+        this.settingUtils.addItem({
             key: "Hint",
             value: "",
             type: "hint",
@@ -87,6 +118,18 @@ export default class PluginSample extends Plugin {
                 const savedBaseUrl = this.settingUtils.get("OpenAIBaseURL");
                 if (savedBaseUrl) {
                     this.data[STORAGE_NAME].openaiBaseUrl = savedBaseUrl;
+                }
+            }
+            if (!this.data[STORAGE_NAME].openaiModel) {
+                const savedModel = this.settingUtils.get("OpenAIModel");
+                if (savedModel) {
+                    this.data[STORAGE_NAME].openaiModel = savedModel;
+                }
+            }
+            if (!this.data[STORAGE_NAME].openaiLanguage) {
+                const savedLanguage = this.settingUtils.get("OpenAILanguage");
+                if (savedLanguage) {
+                    this.data[STORAGE_NAME].openaiLanguage = savedLanguage;
                 }
             }
         } catch (error) {
@@ -150,6 +193,8 @@ export default class PluginSample extends Plugin {
     private async handleTranscribeAudio(detail: any) {
         const apiKey = this.data[STORAGE_NAME]?.openaiApiKey || this.settingUtils.get("OpenAIAPIKey");
         const baseUrl = this.data[STORAGE_NAME]?.openaiBaseUrl || this.settingUtils.get("OpenAIBaseURL");
+        const model = this.data[STORAGE_NAME]?.openaiModel || this.settingUtils.get("OpenAIModel");
+        const language = this.data[STORAGE_NAME]?.openaiLanguage || this.settingUtils.get("OpenAILanguage");
         
         if (!apiKey) {
             showMessage(this.i18n.apiKeyRequired, 2500, "error");
@@ -196,7 +241,9 @@ export default class PluginSample extends Plugin {
             // Transcribe the audio (no message shown to avoid interference with error messages)
             const transcription = await transcribeAudio(audioPath, {
                 apiKey: apiKey,
-                baseUrl: baseUrl
+                baseUrl: baseUrl,
+                model: model,
+                language: language
             });
 
             // Insert the transcription after the audio block
