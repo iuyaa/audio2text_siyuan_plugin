@@ -20,7 +20,8 @@ export default class PluginSample extends Plugin {
             openaiApiKey: "",
             openaiBaseUrl: "",
             openaiModel: "",
-            openaiLanguage: ""
+            openaiLanguage: "",
+            openaiPrompt: ""
         };
 
         // Register audio menu event listener
@@ -88,6 +89,19 @@ export default class PluginSample extends Plugin {
             }
         });
         this.settingUtils.addItem({
+            key: "OpenAIPrompt",
+            value: "",
+            type: "textinput",
+            title: this.i18n.openaiPrompt,
+            description: this.i18n.openaiPromptDesc,
+            action: {
+                callback: () => {
+                    let value = this.settingUtils.takeAndSave("OpenAIPrompt");
+                    this.data[STORAGE_NAME].openaiPrompt = value;
+                }
+            }
+        });
+        this.settingUtils.addItem({
             key: "Hint",
             value: "",
             type: "hint",
@@ -130,6 +144,12 @@ export default class PluginSample extends Plugin {
                 const savedLanguage = this.settingUtils.get("OpenAILanguage");
                 if (savedLanguage) {
                     this.data[STORAGE_NAME].openaiLanguage = savedLanguage;
+                }
+            }
+            if (!this.data[STORAGE_NAME].openaiPrompt) {
+                const savedPrompt = this.settingUtils.get("OpenAIPrompt");
+                if (savedPrompt) {
+                    this.data[STORAGE_NAME].openaiPrompt = savedPrompt;
                 }
             }
         } catch (error) {
@@ -195,6 +215,7 @@ export default class PluginSample extends Plugin {
         const baseUrl = this.data[STORAGE_NAME]?.openaiBaseUrl || this.settingUtils.get("OpenAIBaseURL");
         const model = this.data[STORAGE_NAME]?.openaiModel || this.settingUtils.get("OpenAIModel");
         const language = this.data[STORAGE_NAME]?.openaiLanguage || this.settingUtils.get("OpenAILanguage");
+        const prompt = this.data[STORAGE_NAME]?.openaiPrompt || this.settingUtils.get("OpenAIPrompt");
         
         if (!apiKey) {
             showMessage(this.i18n.apiKeyRequired, 2500, "error");
@@ -243,7 +264,8 @@ export default class PluginSample extends Plugin {
                 apiKey: apiKey,
                 baseUrl: baseUrl,
                 model: model,
-                language: language
+                language: language,
+                prompt: prompt
             });
 
             // Insert the transcription after the audio block

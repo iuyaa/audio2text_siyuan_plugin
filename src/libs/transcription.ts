@@ -9,6 +9,7 @@ export interface TranscriptionOptions {
     language?: string;
     baseUrl?: string;
     model?: string;
+    prompt?: string;
 }
 
 const OPENAI_ALLOWED_EXTS = new Set([
@@ -97,6 +98,10 @@ export async function transcribeAudio(
     const language = (options.language || "").trim();
     if (language) {
         formData.append("language", language);
+    }
+    const prompt = (options.prompt || "").trim();
+    if (prompt) {
+        formData.append("prompt", prompt);
     }
 
     const baseUrl = normalizeBaseUrl(options.baseUrl);

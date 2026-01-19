@@ -13,6 +13,8 @@
     "openaiModelDesc": "Optional. Model name for transcription (defaults to whisper-1)",
     "openaiLanguage": "Language",
     "openaiLanguageDesc": "Optional. Leave blank to auto-detect the audio language (e.g., en, zh)",
+    "openaiPrompt": "Prompt",
+    "openaiPromptDesc": "Optional. Provide vocabulary or context to guide transcription",
     "transcribing": "Transcribing audio...",
     "transcriptionSuccess": "Transcription completed",
     "transcriptionError": "Transcription failed",
