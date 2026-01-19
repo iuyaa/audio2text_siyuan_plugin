@@ -346,6 +346,14 @@ export const getFileBlob = async (path: string): Promise<Blob | null> => {
     // But DOM/audio elements often use "/assets/xxx.wav" (or "assets/xxx.wav").
     const normalizeWorkspacePath = (p: string): string => {
         if (!p) return p;
+        const decodePath = (value: string): string => {
+            if (!value.includes("%")) return value;
+            try {
+                return decodeURIComponent(value);
+            } catch {
+                return value;
+            }
+        };
         // Strip query/hash
         p = p.split("?")[0].split("#")[0];
         // If it's an absolute URL, take pathname
@@ -356,6 +364,7 @@ export const getFileBlob = async (path: string): Promise<Blob | null> => {
         } catch {
             // ignore URL parsing errors
         }
+        p = decodePath(p);
         if (p.startsWith("assets/")) {
             p = "/" + p;
         }
