@@ -16,7 +16,7 @@ export default class PluginSample extends Plugin {
     private settingUtils: SettingUtils;
 
     async onload() {
-        this.data[STORAGE_NAME] = { openaiApiKey: "" };
+        this.data[STORAGE_NAME] = { openaiApiKey: "", openaiBaseUrl: "" };
 
         // Register audio menu event listener
         this.eventBus.on("open-menu-av", this.audioMenuEventBindThis);
@@ -40,6 +40,19 @@ export default class PluginSample extends Plugin {
                 callback: () => {
                     let value = this.settingUtils.takeAndSave("OpenAIAPIKey");
                     this.data[STORAGE_NAME].openaiApiKey = value;
+                }
+            }
+        });
+        this.settingUtils.addItem({
+            key: "OpenAIBaseURL",
+            value: "",
+            type: "textinput",
+            title: this.i18n.openaiBaseUrl,
+            description: this.i18n.openaiBaseUrlDesc,
+            action: {
+                callback: () => {
+                    let value = this.settingUtils.takeAndSave("OpenAIBaseURL");
+                    this.data[STORAGE_NAME].openaiBaseUrl = value;
                 }
             }
         });
@@ -68,6 +81,12 @@ export default class PluginSample extends Plugin {
                 const savedKey = this.settingUtils.get("OpenAIAPIKey");
                 if (savedKey) {
                     this.data[STORAGE_NAME].openaiApiKey = savedKey;
+                }
+            }
+            if (!this.data[STORAGE_NAME].openaiBaseUrl) {
+                const savedBaseUrl = this.settingUtils.get("OpenAIBaseURL");
+                if (savedBaseUrl) {
+                    this.data[STORAGE_NAME].openaiBaseUrl = savedBaseUrl;
                 }
             }
         } catch (error) {
@@ -130,6 +149,7 @@ export default class PluginSample extends Plugin {
 
     private async handleTranscribeAudio(detail: any) {
         const apiKey = this.data[STORAGE_NAME]?.openaiApiKey || this.settingUtils.get("OpenAIAPIKey");
+        const baseUrl = this.data[STORAGE_NAME]?.openaiBaseUrl || this.settingUtils.get("OpenAIBaseURL");
         
         if (!apiKey) {
             showMessage(this.i18n.apiKeyRequired, 2500, "error");
@@ -175,7 +195,8 @@ export default class PluginSample extends Plugin {
         try {
             // Transcribe the audio (no message shown to avoid interference with error messages)
             const transcription = await transcribeAudio(audioPath, {
-                apiKey: apiKey
+                apiKey: apiKey,
+                baseUrl: baseUrl
             });
 
             // Insert the transcription after the audio block
